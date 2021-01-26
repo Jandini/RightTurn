@@ -9,7 +9,8 @@
     <RootNamespace>RightTurn</RootNamespace>
     <Description>Provides application start-up container and extensions. Take new Turn() to run your .NET application with organized main code. Use directions container to manage your configuration, logging, exception handling and command line parser.</Description>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
-    <PackageTags>rightturn start-up container application main logging configuration exceptions commandline command line</PackageTags>
+    <PackageTags>right turn start-up container application main logging configuration exceptions commandline command line</PackageTags>
+    <RepositoryUrl>https://github.com/Jandini/RightTurn</RepositoryUrl>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
@@ -23,7 +24,7 @@
   <ItemGroup>
     <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="3.1.4" />
 
-    <PackageReference Include="GitVersionTask" Version="5.3.3">
+    <PackageReference Include="GitVersionTask" Version="5.5.1">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
