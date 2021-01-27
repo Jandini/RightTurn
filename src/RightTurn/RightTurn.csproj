@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>netcoreapp3.1</TargetFramework>
+    <TargetFrameworks>netcoreapp3.1;net5.0</TargetFrameworks>
     <Authors>Matt Janda</Authors>
     <PackageIcon>Turn.png</PackageIcon>
     <PackageId>RightTurn</PackageId>
@@ -10,7 +10,7 @@
     <Description>Provides application start-up container and extensions. Take new Turn() to run your .NET application with organized main code. Use directions container to manage your configuration, logging, exception handling and command line parser.</Description>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <PackageTags>right turn start-up container application main logging configuration exceptions commandline command line</PackageTags>
-    <RepositoryUrl>https://github.com/Jandini/RightTurn</RepositoryUrl>
+    <RepositoryUrl>https://github.com/Jandini/RightTurn</RepositoryUrl>    
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
@@ -21,9 +21,15 @@
     <OutputPath>..\..\bin</OutputPath>
   </PropertyGroup>
 
-  <ItemGroup>
+  <ItemGroup Condition=" '$(TargetFramework)' == 'netcoreapp3.1' ">
     <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="3.1.11" />
+  </ItemGroup>
 
+  <ItemGroup Condition=" '$(TargetFramework)' == 'net5.0' ">
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="5.0.1" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="GitVersionTask" Version="5.5.1">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
