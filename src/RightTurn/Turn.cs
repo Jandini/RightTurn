@@ -25,23 +25,6 @@ namespace RightTurn
                 .WithServices(services)
                 .Take<TService, TImplementation>(run);
 
-        public static void Take<TService, TImplementation>(string[] args, Action<TService> run, Action<IServiceCollection> services = null)
-            where TService : class
-            where TImplementation : class, TService => new Turn()
-                .WithDirections()
-                .AddDirection(args)
-                .WithServices(services)
-                .Take<TService, TImplementation>(run);
-
-        public static int Take<TService, TImplementation>(string[] args, Func<TService, int> run, Action<IServiceCollection> services = null)
-            where TService : class
-            where TImplementation : class, TService => new Turn()
-                .WithDirections()
-                .AddDirection(args)
-                .WithServices(services)
-                .Take<TService, TImplementation>(run);
-
-
         public static TService Take<TService, TImplementation>()
             where TService : class
             where TImplementation : class, TService
