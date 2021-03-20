@@ -43,16 +43,6 @@ namespace QuickStart
 
 When your code grows the logic in `Main` method might grow too. RightTurn will help to keep it clean and tidy. 
 
-RightTurn provides a few extensions that will provide easy way to add configuration, logging, command line parser and exception handling. 
-
-
-
-### Examples
-
-See how RightTurn can help to start-up your application.
-
-[Janda.CTF](https://github.com/Jandini/Janda.CTF/blob/develop/src/Janda.CTF/CTF.cs#L40)
-
 
 
 ## Quick Start
@@ -172,7 +162,7 @@ See how RightTurn can help to start-up your application.
       ]
     },
     "QuickSettings": {
-    "Message": "Hello {name}, Welcome to RightTurn.",
+    	"Message": "Hello {name}, Welcome to RightTurn.",
       "Question": "Who are you?"
     }
   }  
@@ -214,7 +204,7 @@ See how RightTurn can help to start-up your application.
   QuickStart 1.0.0
   Copyright (C) 2021 QuickStart
   
-    --name
+    --name       Your name.
   
     --help       Display this help screen.
   
@@ -228,6 +218,14 @@ See how RightTurn can help to start-up your application.
   ```
 
   
+
+### Quick Examples
+
+See how RightTurn can help to start-up your application.
+
+[Janda.CTF](https://github.com/Jandini/Janda.CTF/blob/develop/src/Janda.CTF/CTF.cs#L40)
+
+
 
 
 
