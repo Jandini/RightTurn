@@ -49,12 +49,185 @@ RightTurn provides a few extensions that will provide easy way to add configurat
 
 ### Examples
 
-See how RightTurn can start-up your application.
+See how RightTurn can help to start-up your application.
 
 [Janda.CTF](https://github.com/Jandini/Janda.CTF/blob/develop/src/Janda.CTF/CTF.cs#L40)
 
 
 
+## Quick Start
+
+- Create **QuickStart** Console Application for .NET 5.0 or .NET Core 3.1 in Visual Studio
+
+- Add **RightTurn.Extensions.CommandLine** NuGet package.
+
+- Add **RightTurn.Extensions.Serilog** NuGet package.
+
+- Add following files to your project
+
+  ###### IQuickOptions.cs
+  
+  ```C# 
+  namespace QuickStart
+  {
+      interface IQuickOptions
+      {
+          string Name { get; }
+      }
+  }
+  ```
+  ###### QuickOptions.cs
+  ```C# 
+  using CommandLine;
+  
+  namespace QuickStart
+  {
+      class QuickOptions : IQuickOptions
+      {
+          [Option(HelpText = "Your name.")]
+          public string Name { get; set; }
+      }
+  }
+  ```
+  ###### IQuickSettings.cs
+  
+  ```C# 
+  namespace QuickStart
+  {
+      internal interface IQuickSettings
+      {
+          string Message { get; }
+          string Question { get; }
+      }
+  }
+  ```
+  ###### QuickSettings.cs
+  ```C# 
+  namespace QuickStart
+  {
+      class QuickSettings : IQuickSettings
+      {
+          public string Message { get; set; }
+          public string Question { get; set; }
+      }
+  }
+  ```
+  ###### IQuickService.cs
+  ```C#
+  namespace QuickStart
+  {
+      interface IQuickService
+      {
+          void Run();
+      }
+  }
+  ```
+  ###### QuickService.cs
+  ```C# 
+  using Microsoft.Extensions.Logging;
+  using System;
+  
+  namespace QuickStart
+  {
+      class QuickService : IQuickService
+      {
+          readonly ILogger<QuickService> _logger;
+          readonly IQuickOptions _options;
+          readonly IQuickSettings _settings;
+  
+          public QuickService(ILogger<QuickService> logger, IQuickOptions options, IQuickSettings settings)
+          {
+              _logger = logger;
+              _options = options;
+              _settings = settings;
+          }
+  
+          public void Run()
+          {
+              if (_options.Name is null)
+                  throw new Exception(_settings.Question);
+  
+            _logger.LogInformation(_settings.Message, _options.Name);
+          }
+      }
+  }
+  ```
+  ###### appsettings.json
+  *Set **Copy to Output Directory** to **Copy if newer***
+
+  ```JSON 
+  {
+    "Serilog": {
+      "MinimumLevel": {
+        "Default": "Information"
+      },
+      "WriteTo": [
+        {
+          "Name": "Console",
+          "Args": {
+            "theme": "Serilog.Sinks.SystemConsole.Themes.AnsiConsoleTheme::Literate, Serilog.Sinks.Console",
+            "outputTemplate": "[{Timestamp:yyyy-MM-dd HH:mm:ss} {Level:u5}] {Message:lj}{NewLine}{Exception}"
+          }
+        }
+      ]
+    },
+    "QuickSettings": {
+    "Message": "Hello {name}, Welcome to RightTurn.",
+      "Question": "Who are you?"
+    }
+  }  
+  ```
+- Add start-up with RightTurn to your program's Main method.
+
+  ###### Program.cs
+  ```C#
+  using RightTurn;
+  using RightTurn.Extensions.CommandLine;
+  using RightTurn.Extensions.Configuration;
+  using RightTurn.Extensions.Logging;
+  using RightTurn.Extensions.Serilog;
+  
+  namespace QuickStart
+  {
+      class Program
+      {
+          static void Main(string[] args) => new Turn()
+              .ParseOptions<QuickOptions>(args)
+              .WithOptionsAsSingleton<IQuickOptions, QuickOptions>()
+              .WithConfigurationSettings<IQuickSettings, QuickSettings>("QuickSettings")
+              .WithSerilog()
+              .WithUnhandledExceptionLogging()
+              .Take<IQuickService, QuickService>((quick) => quick.Run());
+      }
+  }
+  ```
+
+- Run application.
+
+  ```
+  [2021-03-20 22:39:24 FATL] Who are you?
+  ```
+
+- Run application with **--help** command line parameter.
+
+  ```
+  QuickStart 1.0.0
+  Copyright (C) 2021 QuickStart
+  
+    --name
+  
+    --help       Display this help screen.
+  
+    --version    Display version information.
+  ```
+
+- Run application with **--name Matt** command line parameter.
+
+  ```
+  [2021-03-20 22:40:04 INFO] Hello Matt, Welcome to RightTurn.
+  ```
+
+  
 
 
 
@@ -74,7 +247,7 @@ See how RightTurn can start-up your application.
    ```C#
    namespace QuickStart
    {
-       internal interface IQuickService
+       interface IQuickService
        {
            void Run();
        }
@@ -113,7 +286,7 @@ See how RightTurn can start-up your application.
     }
 	```
 
-- Run application 
+- Run application.
     ```
     Hello world
     ```
@@ -296,6 +469,37 @@ See how RightTurn can start-up your application.
     
     Note: `WithSerilog()  ` will implicitly call `WithConfigurationFile()` when `ITurnConfiguration` is not present in direction container. 
 
+- Add logging to file for Serilog in appsettings.json file.
+
+  ###### appsettings.json
+
+  ```json
+  {
+    "Serilog": {
+      "MinimumLevel": {
+        "Default": "Information"
+      },
+      "WriteTo": [
+        {
+          "Name": "Console",
+          "Args": {
+            "theme": "Serilog.Sinks.SystemConsole.Themes.AnsiConsoleTheme::Code, Serilog.Sinks.Console",
+            "outputTemplate": "[{Timestamp:HH:mm:ss} {Level:u3}] {Message:lj}{NewLine}{Exception}"
+          }
+        },
+        {
+          "Name": "File",
+          "Args": {
+            "path": "logs/.log",
+            "rollingInterval": "Day"
+          }
+        }
+      ]
+    }
+  }
+  ```
+
+  
 
 
 ### Configuration
@@ -343,7 +547,7 @@ See how RightTurn can start-up your application.
   }
   ```
 
-- Add "Console" section to Logging in appsettings.json file to customize console logging behaviour. For example you can change logging level.
+- Add "Console" section to Logging in appsettings.json file to customize console logging behaviour. For example, you can change logging level.
 
   ```json
   {
@@ -538,15 +742,130 @@ See how RightTurn can start-up your application.
 
   
 
-### Command Line
+### Command Line Parser
+
+- Add **RightTurn.Extensions.CommandLine** NuGet package.
+
+- Add **QuickOptions** class to your project.
+
+  ######  QuickOptions.cs
+
+  ```C#
+  using CommandLine;
+  
+  namespace QuickStart
+  {
+      class QuickOptions
+      {
+          [Option(Required = true)]
+          public string Name { get; set; }
+      }
+  }
+  ```
+
+- Use `ParseOptions` to program's `Main` method.
+
+  ###### Program.cs
+
+  ```C#
+  using RightTurn;
+  using RightTurn.Extensions.CommandLine;
+  using RightTurn.Extensions.Logging;
+  using RightTurn.Extensions.Serilog;
+  
+  namespace QuickStart
+  {
+      class Program
+      {
+          static void Main(string[] args) => new Turn()
+              .ParseOptions<QuickOptions>(args)
+              .WithSerilog()
+              .WithUnhandledExceptionLogging()
+              .Take<IQuickService, QuickService>((quick) => quick.Run());
+      }
+  }
+  ```
 
 
+- Run application
 
+  ```
+  QuickStart 1.0.0
+  Copyright (C) 2021 QuickStart
+  
+  ERROR(S):
+    Required option 'name' is missing.
+  
+    --name       Required.
+  
+    --help       Display this help screen.
+  
+    --version    Display version information.
+  ```
 
+- Run application with `--name "Hello command line"` parameter. 
 
+  ```
+  [21:39:28 INF] Hello world
+  ```
 
+  The parameters were successfully parsed.
 
+- Add `.WithOptionsAsSingleton<QuickOptions>()`
 
+  ```C#
+  using RightTurn;
+  using RightTurn.Extensions.CommandLine;
+  using RightTurn.Extensions.Logging;
+  using RightTurn.Extensions.Serilog;
+  
+  namespace QuickStart
+  {
+      class Program
+      {
+          static void Main(string[] args) => new Turn()
+              .ParseOptions<QuickOptions>(args)
+              .WithOptionsAsSingleton<QuickOptions>()
+              .WithSerilog()
+              .WithUnhandledExceptionLogging()
+              .Take<IQuickService, QuickService>((quick) => quick.Run());
+      }
+  }
+  ```
+
+- Add **QuickOptions** to **QuickService** class.
+
+  ```C#
+  using Microsoft.Extensions.Logging;
+  
+  namespace QuickStart
+  {
+      class QuickService : IQuickService
+      {
+          readonly ILogger<QuickService> _logger;
+          readonly QuickOptions _options;
+  
+          public QuickService(ILogger<QuickService> logger, QuickOptions options)
+          {
+              _logger = logger;
+              _options = options;
+          }
+  
+          public void Run()
+          {
+              _logger.LogInformation(_options.Name);
+          }
+      }
+  }
+  ```
+
+- Run application with `--name "Hello world from command line"` parameter.
+
+  ```
+  [21:44:48 INF] Hello world from command line
+  ```
+
+  
 
 
 
@@ -640,8 +959,6 @@ The example is based on the code created in **Logging with RightTurn Serilog** s
 
 
 
-
-
 ## What's Inside
 
 The start-up _Directions Container_ is a simple `Dictionary<Type, object>` that implements `ITurnDirections` interface.  The interface offers access to objects stored in the container which will be referred as "directions".  
@@ -681,43 +998,43 @@ In this section you can apply available extensions and provide services and conf
 
 `WithParser`
 
-> Change default command line parser
+> Change default command line parser.
 
 `ParseVerbs`
 
-> Parse command line verbs 
+> Parse command line verbs.
 
 `ParseOptions`
 
-> Parse command line options
+> Parse command line options.
 
 
 
 `WithDirections`
 
-> Add _Directions_ container as `ITurnDirections` singleton to `IServiceCollection`
+> Add _Directions_ container as `ITurnDirections` singleton to `IServiceCollection`.
 
 `WithServices`
 
-> Add services required services
+> Add services required services.
 
 `WithTurn`
 
-> Access or add directions to Directions container 
+> Access or add directions to Directions container.
 
 `WithUnhandledExceptionLogging`
 
-> Add unhandled exception handler
+> Add unhandled exception handler.
 
 
 
 `WithConfiguration`
 
-> Build and provide your own configuration 
+> Build and provide your own configuration.
 
 `WithConfigurationFile`
 
-> Provide configuration from a file. Default is optional `appsettings.config`
+> Provide configuration from a file. Default is optional `appsettings.config`.
 
 `WithConfigurationSettings`
 
@@ -727,11 +1044,11 @@ In this section you can apply available extensions and provide services and conf
 
 `WithLogging`
 
-> Provide logging configuration builder
+> Provide logging configuration builder.
 
 `WithSerilog`
 
-> Add Serilog logging 
+> Add Serilog logging.
 
 
 
@@ -741,15 +1058,15 @@ The `Take` will do following:
 
 `AddConfiguration`
 
-> Add configuration if _directions container_ have `ITrunConfiguration` 
+> Add configuration if _directions container_ has `ITrunConfiguration`.
 
 `AddLogging`
 
-> Add logging if _directions container_ have `ITurnLogging` 
+> Add logging if _directions container_ has `ITurnLogging`.
 
 `BuildServiceProvider`
 
-> Build service provider and add `IServiceCollection` to _directions container_ container 
+> Build service provider and add `IServiceCollection` to _directions container_ container.
 
 
 
@@ -767,16 +1084,6 @@ return Directions.Add<IServiceProvider>(Directions.Get<IServiceCollection>().Bui
 
 
 
-### Directions
-
-This is what you can find in directions container 
-
-- `ITurnDirections` 
-- `ITurnConfiguration` 
-- `ITurnLogging`
-
-
-
 ### Extensions
 
 * [RightTurn.Extensions.Configuration](https://github.com/Jandini/RightTurn.Extensions.Configuration)
@@ -790,6 +1097,5 @@ Provides [Serilog](https://github.com/serilog/serilog) extensions.
 
 *  [RightTurn.Extensions.CommandLine](https://github.com/Jandini/RightTurn.Extensions.CommandLine)
 Provides [CommandLine Parser](https://github.com/commandlineparser/commandline) extensions.
-
 
 
