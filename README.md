@@ -2,9 +2,7 @@
 > Take the right turn to start your .NET application with dependency injection container, configuration, logging, exception handling and command line parser.
 >
 
-RightTurn is .NET application start-up container. You can start application with your own directions or take the turn with available extensions.
-
-The goal is to organize your application start-up code as well as provide reusable components via extensions.
+RightTurn is .NET application start-up container. The goal is to organize your application start-up code as well as provide reusable components via extensions.
 
 Your program start-up can look like this ...
 
@@ -34,6 +32,7 @@ namespace QuickStart
         {
             var serviceCollection = new ServiceCollection();
             serviceCollection.AddTransient<IQuickService, QuickService>();
+            
             var serviceProvider = serviceCollection.BuildServiceProvider();
             serviceProvider.GetRequiredService<IQuickService>().Run();
         }
