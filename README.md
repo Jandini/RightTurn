@@ -4,10 +4,6 @@
 
 RightTurn is .NET application start-up container. You can start application with your own directions or take the turn with available extensions.
 
-
-
-## Right Goal
-
 The goal is to organize your application start-up code as well as provide reusable components via extensions.
 
 Your program start-up can look like this ...
@@ -45,11 +41,25 @@ namespace QuickStart
 }
 ```
 
-When your code grows the logic in Main method might grow too. RightTurn will help to keep it clean and tidy. 
+When your code grows the logic in `Main` method might grow too. RightTurn will help to keep it clean and tidy. 
+
+RightTurn provides a few extensions that will provide easy way to add configuration, logging, command line parser and exception handling. 
 
 
 
-## Quick Start
+### Examples
+
+See how RightTurn can start-up your application.
+
+[Janda.CTF](https://github.com/Jandini/Janda.CTF/blob/develop/src/Janda.CTF/CTF.cs#L40)
+
+
+
+
+
+
+
+## Step by Step
 
 - Create a new project from **Console Application** template. 
 
@@ -88,7 +98,7 @@ When your code grows the logic in Main method might grow too. RightTurn will hel
    }
    ```
    
-- Add `new Turn()` to program's `Main` method
+- Add `new Turn()` to program's `Main` method.
    ######  Program.cs
    ```C#
     using RightTurn;
@@ -103,11 +113,10 @@ When your code grows the logic in Main method might grow too. RightTurn will hel
     }
 	```
 
-Here you are... 
-
-```
-Hello world
-```
+- Run application 
+    ```
+    Hello world
+    ```
 
 
 
@@ -148,9 +157,9 @@ Hello world
 #### Logging with Microsoft Console Logging
 
 - Add **Microsoft.Extensions.Logging.Console** NuGet package.
-- Add `WithLogging` to program's `Main` method
+- Add `WithLogging` to program's `Main` method.
 
-- ######  Program.cs
+  ######  Program.cs
 
   ```C#
   using RightTurn;
@@ -168,12 +177,11 @@ Hello world
   }
   ```
 
-That's it ... 
-
-```
-info: QuickStart.QuickService[0]
-      Hello World
-```
+- Run application 
+    ```
+    info: QuickStart.QuickService[0]
+          Hello World
+    ```
 
 
 
@@ -182,7 +190,7 @@ info: QuickStart.QuickService[0]
 * Add **Serilog.Extensions.Logging** NuGet package.
 * Add **Serilog.Sinks.Console** NuGet package.
 
-- Add `WithLogging` to program's `Main` method
+- Add `WithLogging` to program's `Main` method.
 
   ######  Program.cs
 
@@ -206,23 +214,20 @@ info: QuickStart.QuickService[0]
   }
   ```
 
-That's it ...
-
-```
-[21:50:43 INF] Hello World
-```
-
-
-
-#### Logging with RightTurn.Extensions.Serilog
+- Run application 
+    ```
+    [21:50:43 INF] Hello World
+    ```
 
 
 
-**Example 1** - Serilog with inline configuration by code.
+#### Logging with RightTurn Serilog
 
-- Add **RightTurn.Extensions.Serilog** NuGet package
+##### Serilog with inline configuration by code
 
-- Add `WithLogging` to program's `Main` method
+- Add **RightTurn.Extensions.Serilog** NuGet package.
+
+- Add `WithLogging` to program's `Main` method.
 
   ######  Program.cs
 
@@ -243,15 +248,15 @@ That's it ...
   
   ```
 
+##### Serilog with configuration provided from *appsettings.json* file
 
+- Add **New Item** to your project.
 
-**Example 2** - Serilog with configuration provided from *appsettings.json* file.
+- Select **JSON File** and provide **Name** as `appsettings.json`.
 
-- Add **New Item** to your solution
+- Add Serilog configuration to appsettings.json file.
 
-- Select **JSON File** and provide **Name** as `appsettings.json`
-
-- Add following example of Serilog configuration to appsettings.json file
+  ###### appsettings.json
 
   ```json
   {
@@ -272,7 +277,7 @@ That's it ...
   }
   ```
 
-- Use `WithSerilog()` in program's `Main` method
+- Use `WithSerilog()` in program's `Main` method.
 
     ```C#
     using RightTurn;
@@ -288,18 +293,250 @@ That's it ...
         }
     }
     ```
+    
+    Note: `WithSerilog()  ` will implicitly call `WithConfigurationFile()` when `ITurnConfiguration` is not present in direction container. 
 
 
 
 ### Configuration
 
+- Add **RightTurn.Extensions.Configuration** NuGet package.
+- Add **New Item** to your project.
+- Select **JSON File** and provide **Name** as `appsettings.json`.
 
 
 
+#### Configuration for Microsoft Console Logging
+
+- Add Logging configuration to appsettings.json file.
+
+  ```json
+  {
+    "Logging": {
+      "LogLevel": {
+        "Default": "Information"
+      }
+    }
+  }
+  ```
+
+- Add `WithConfigurationFile()` and configuration to logging builder in `WithLogging`.
+
+  ######  Program.cs
+
+  ```C#
+  using RightTurn;
+  using RightTurn.Extensions.Logging;
+  using Microsoft.Extensions.Logging;
+  
+  namespace QuickStart
+  {
+      class Program
+      {
+           static void Main() => new Turn()
+             .WithConfigurationFile()
+             .WithLogging((builder, turn) => builder
+                  .AddConsole()
+                  .AddConfiguration(turn.Directions.Configuration().GetSection("Logging")))         
+             .Take<IQuickService, QuickService>((quick) => quick.Run());
+      }
+  }
+  ```
+
+- Add "Console" section to Logging in appsettings.json file to customize console logging behaviour. For example you can change logging level.
+
+  ```json
+  {
+    "Logging": {
+      "LogLevel": {
+        "Default": "Information"
+      },
+      "Console": {      
+        "LogLevel": {
+          "Default": "Warning"
+        }
+      }
+    }
+  }
+  ```
 
 
 
+#### Bind configuration settings to singleton class or service
 
+- Add **Settings** class to your project.
+
+  ######  Settings.cs
+
+  ```C#
+  namespace QuickStart
+  {
+      class Settings
+      {
+          public string Description { get; set; }
+      }
+  }
+  ```
+
+- Add "Quick" section to appsettings.json file.
+
+  ###### appsettings.json
+
+  ```json
+  {
+    "Logging": {
+      "LogLevel": {
+        "Default": "Information"
+      }    
+    },
+    "Quick": {
+      "Description": "Hello world from configuration file"
+    }
+  }
+  ```
+
+- Add ` .WithConfigurationSettings<Settings>("Quick")()` to main method.
+
+  ######  Program.cs
+
+  ```C#
+  using RightTurn;
+  using RightTurn.Extensions.Logging;
+  using Microsoft.Extensions.Logging;
+  
+  namespace QuickStart
+  {
+      class Program
+      {
+           static void Main() => new Turn()
+  			.WithConfigurationFile()
+  			.WithLogging((builder, turn) => builder
+  				.AddConsole()
+  				.AddConfiguration(turn.Directions.Configuration().GetSection("Logging")))
+  			.WithConfigurationSettings<Settings>("Quick")             
+  			.Take<IQuickService, QuickService>((quick) => quick.Run());
+      }
+  }
+  ```
+
+- Add `Settings` to **QuickService** class.
+
+  ######  QuickService.cs
+
+  ```C#
+  using Microsoft.Extensions.Logging;
+  
+  namespace QuickStart
+  {
+      class QuickService : IQuickService
+      {
+          readonly ILogger<QuickService> _logger;
+          readonly Settings _settings;
+  
+          public QuickService(ILogger<QuickService> logger, Settings settings)
+          {
+              _logger = logger;
+              _settings = settings;
+          }
+  
+          public void Run()
+          {
+              _logger.LogInformation(_settings.Description);            
+          }
+      }
+  }
+  ```
+
+- Run application 
+
+  ```
+  info: QuickStart.QuickService[0]
+        Hello world from configuration file
+  ```
+
+  ##### Hide Settings behind interface
+
+- Add **ISettings** interface to your project.
+
+  ######  ISettings.cs
+
+  ```C#
+  namespace QuickStart
+  {
+      interface ISettings
+      {
+          public string Description { get; }
+      }
+  }
+  ```
+
+- Add the interface to **Settings** class.
+
+  ######  Settings.cs
+
+  ```C#
+  namespace QuickStart
+  {
+      class Settings : ISettings
+      {
+          public string Description { get; set; }
+      }
+  }
+  ```
+
+- Add `ISettings` to **QuickService** class.
+
+  ######  QuickService.cs
+
+  ```C#
+  using Microsoft.Extensions.Logging;
+  
+  namespace QuickStart
+  {
+      class QuickService : IQuickService
+      {
+          readonly ILogger<QuickService> _logger;
+          readonly ISettings _settings;
+  
+          public QuickService(ILogger<QuickService> logger, ISettings settings)
+          {
+              _logger = logger;
+              _settings = settings;
+          }
+  
+          public void Run()
+          {
+              _logger.LogInformation(_settings.Description);            
+          }
+      }
+  }
+  ```
+
+- Add ` .WithConfigurationSettings<ISettings, Settings>("Quick")()` to main method.
+
+  ######  Program.cs
+
+  ```C#
+  using RightTurn;
+  using RightTurn.Extensions.Logging;
+  using Microsoft.Extensions.Logging;
+  
+  namespace QuickStart
+  {
+      class Program
+      {
+           static void Main() => new Turn()
+  			.WithConfigurationFile()
+  			.WithLogging((builder, turn) => builder
+  				.AddConsole()
+  				.AddConfiguration(turn.Directions.Configuration().GetSection("Logging")))
+  			.WithConfigurationSettings<ISettings, Settings>("Quick")             
+  			.Take<IQuickService, QuickService>((quick) => quick.Run());
+      }
+  }
+  ```
+
+  
 
 ### Command Line
 
@@ -313,10 +550,99 @@ That's it ...
 
 
 
+### Unhandled Exceptions
+
+The example is based on the code created in **Logging with RightTurn Serilog** section above.
+
+- Add `throw new Exception` to **QuickService** class.
+
+  ######  QuickService.cs
+
+  ```C#
+  using System;
+  using Microsoft.Extensions.Logging;
+  
+  namespace QuickStart
+  {
+      class QuickService : IQuickService
+      {
+          readonly ILogger<QuickService> _logger;
+  
+          public QuickService(ILogger<QuickService> logger)
+          {
+              _logger = logger;
+          }
+  
+          public void Run()
+          {
+              throw new Exception("I am unhandled");
+          }
+      }
+  }
+  ```
+
+- Add `WithUnhandledExceptionHandler` to `Main` method.
+
+  ######  Program.cs
+
+  ```C#
+  using RightTurn;
+  using RightTurn.Extensions.Serilog;
+  using Serilog;
+  
+  namespace QuickStart
+  {
+      class Program
+      {
+          static void Main() => new Turn()
+              .WithSerilog()
+  			.WithUnhandledExceptionHandler((exception) => Console.WriteLine(exception.Message))
+              .Take<IQuickService, QuickService>((quick) => quick.Run());
+      }
+  }
+  ```
+
+- Run application 
+
+  ```
+  I am unhandled
+  ```
+
+- Replace `WithUnhandledExceptionHandler` with `WithUnhandledExceptionLogging` 
+
+  ######  Program.cs
+
+  ```C#
+  using RightTurn;
+  using RightTurn.Extensions.Serilog;
+  using Serilog;
+  
+  namespace QuickStart
+  {
+      class Program
+      {
+          static void Main() => new Turn()
+              .WithSerilog()
+  			.WithUnhandledExceptionLogging()
+              .Take<IQuickService, QuickService>((quick) => quick.Run());
+      }
+  }
+  ```
+
+- Run application
+
+  ```
+  [21:01:46 FTL] I am unhandled
+  ```
 
 
 
-## Quick Insight 
+
+
+
+
+
+## What's Inside
 
 The start-up _Directions Container_ is a simple `Dictionary<Type, object>` that implements `ITurnDirections` interface.  The interface offers access to objects stored in the container which will be referred as "directions".  
 
@@ -393,6 +719,10 @@ In this section you can apply available extensions and provide services and conf
 
 > Provide configuration from a file. Default is optional `appsettings.config`
 
+`WithConfigurationSettings`
+
+> Create settings object, binds configuration section and add the object as singleton service.
+
 
 
 `WithLogging`
@@ -431,7 +761,6 @@ if (Directions.Have<ITurnLogging>(out var logging))
     logging.AddLogging(this);
 
 return Directions.Add<IServiceProvider>(Directions.Get<IServiceCollection>().BuildServiceProvider());
-
 ```
 
 
@@ -461,4 +790,6 @@ Provides [Serilog](https://github.com/serilog/serilog) extensions.
 
 *  [RightTurn.Extensions.CommandLine](https://github.com/Jandini/RightTurn.Extensions.CommandLine)
 Provides [CommandLine Parser](https://github.com/commandlineparser/commandline) extensions.
+
+
 
