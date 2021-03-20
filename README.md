@@ -51,9 +51,15 @@ When your code grows the logic in Main method might grow too. RightTurn will hel
 
 ## Quick Start
 
-###### with NuGet packages
+###### NuGet package
 
 `RightTurn`
+
+###### Provides dependencies
+
+`Microsoft.Extensions.DependencyInjection`
+
+
 
 - Create a new project from **Console Application** template. 
 
@@ -61,7 +67,7 @@ When your code grows the logic in Main method might grow too. RightTurn will hel
 
 - Set *Target Framework* to **.NET 5.0** or **.NET Core 3.1**.
 
-- Add **RightTurn** nuget package.
+- Add **RightTurn** NuGet package.
 
 - Create new interface **IQuickService**. 
    ######  IQuickService.cs
@@ -117,13 +123,19 @@ Hello world
 
 ### Logging
 
-###### with NuGet packages
+###### NuGet package
 
-`RightTurn`, `RightTurn.Extensions.Logging`
+`RightTurn.Extensions.Logging`
 
-Use [RightTurn.Extensions.Logging](https://github.com/Jandini/RightTurn.Extensions.Logging) to start your application with logging and keep you code tidy. It provides `Microsoft.Extensions.Logging` as it's dependency.
+###### Provides dependencies
 
-- Add **RightTurn.Extensions.Logging** nuget package.
+`RightTurn` | `Microsoft.Extensions.Logging`
+
+
+
+Use [RightTurn.Extensions.Logging](https://github.com/Jandini/RightTurn.Extensions.Logging) to start your application with logging and keep you code tidy. 
+
+- Add **RightTurn.Extensions.Logging** NuGet package.
 
 - Add `ILogger<QuickService> _logger` to **QuickService** class.
 
@@ -157,11 +169,17 @@ Use [RightTurn.Extensions.Logging](https://github.com/Jandini/RightTurn.Extensio
 
 #### Logging with Microsoft Console Logging
 
-###### with NuGet packages
+###### NuGet packages
 
-`RightTurn`, `RightTurn.Extensions.Logging`, `Microsoft.Extensions.Logging.Console`
+`RightTurn.Extensions.Logging` | `Microsoft.Extensions.Logging.Console`
 
-- Add **Microsoft.Extensions.Logging.Console** nuget package.
+###### Provides dependencies
+
+`RightTurn` | `Microsoft.Extensions.Logging`
+
+
+
+- Add **Microsoft.Extensions.Logging.Console** NuGet package.
 - Add `WithLogging` to program's `Main` method
 
 - ######  Program.cs
@@ -193,16 +211,16 @@ info: QuickStart.QuickService[0]
 
 #### Logging with Serilog
 
-###### with NuGet packages
+###### NuGet packages
 
-`RightTurn`, `RightTurn.Extensions.Logging`, `Serilog.Extensions.Logging`, `Serilog.Sinks.Console`
+`RightTurn.Extensions.Logging` | `Serilog.Extensions.Logging` | `Serilog.Sinks.Console`
 
 
 
 Following steps shows how to add console logging from `Serilog`.
 
-* Add **Serilog.Extensions.Logging** nuget package.
-* Add **Serilog.Sinks.Console** nuget package.
+* Add **Serilog.Extensions.Logging** NuGet package.
+* Add **Serilog.Sinks.Console** NuGet package.
 
 - Add `WithLogging` to program's `Main` method
 
@@ -220,8 +238,9 @@ Following steps shows how to add console logging from `Serilog`.
           static void Main() => new Turn()
               .WithLogging((builder) => builder.AddSerilog(
                   new LoggerConfiguration()
-                  .WriteTo.Console()
-                  .CreateLogger()))
+                      .WriteTo.Console()
+                      .CreateLogger(),
+  		        dispose: true))            
               .Take<IQuickService, QuickService>((quick) => quick.Run());
       }
   }
@@ -237,15 +256,19 @@ That's it ...
 
 #### Logging with RightTurn.Extensions.Serilog
 
-###### with NuGet packages
+###### NuGet packages
 
-`RightTurn`, `RightTurn.Extensions.Serilog`
+`RightTurn.Extensions.Serilog`
 
 
 
-Package [RightTurn.Extensions.Serilog](https://github.com/Jandini/RightTurn.Extensions.Serilog) provides [Serilog](https://github.com/serilog/serilog) for out of the box. 
+Package [RightTurn.Extensions.Serilog](https://github.com/Jandini/RightTurn.Extensions.Serilog) provides [Serilog](https://github.com/serilog/serilog) for out of the box. The package provides `Microsoft.Extensions.Logging`, `RightTurn` and `RighTurn.Extensions.Configuration` as it's dependencies.
 
-- Add **RightTurn.Extensions.Serilog** nuget package
+
+**Example 1**
+Serilog with inline configuration by code.
+
+- Add **RightTurn.Extensions.Serilog** NuGet package
 
 - Add `WithLogging` to program's `Main` method
 
@@ -268,9 +291,52 @@ Package [RightTurn.Extensions.Serilog](https://github.com/Jandini/RightTurn.Exte
   
   ```
 
-> Note: The `WithSerilog()` without parameters requires `IConfiguration` in directions container. Using `WithSerilog()` without configuration directions will throw exception:
 
->*Unhandled exception. System.Collections.Generic.KeyNotFoundException: >The given key 'Microsoft.Extensions.Configuration.IConfiguration' was >not present in the dictionary.*
+
+**Example 2** 
+Serilog with configuration provided from *appsettings.json* file.
+
+- Add **New Item** to your solution
+
+- Select **JSON File** and provide **Name** as `appsettings.json`
+
+- Add following example of Serilog configuration to appsettings.json file
+
+  ```json
+  {
+    "Serilog": {
+      "MinimumLevel": {
+        "Default": "Information"
+      },
+      "WriteTo": [
+        {
+          "Name": "Console",
+          "Args": {
+            "theme": "Serilog.Sinks.SystemConsole.Themes.AnsiConsoleTheme::Code, Serilog.Sinks.Console",
+            "outputTemplate": "[{Timestamp:HH:mm:ss} {Level:u3}] {Message:lj}{NewLine}{Exception}"
+          }
+        }
+      ]
+    }
+  }
+  ```
+
+- Use `WithSerilog()` in program's `Main` method
+
+    ```C#
+    using RightTurn;
+    using RightTurn.Extensions.Serilog;
+
+    namespace QuickStart
+    {
+        class Program
+        {
+            static void Main() => new Turn()
+                .WithSerilog()
+                .Take<IQuickService, QuickService>((quick) => quick.Run());
+        }
+    }
+    ```
 
 
 
@@ -279,10 +345,6 @@ Package [RightTurn.Extensions.Serilog](https://github.com/Jandini/RightTurn.Exte
 ###### with NuGet packages
 
 `RightTurn`,  `RightTurn.Extensions.Configuration`
-
-
-
-
 
 
 
@@ -463,5 +525,7 @@ Provides [CommandLine Parser](https://github.com/commandlineparser/commandline) 
 
 
 
+
+```
 
 ```
