@@ -51,16 +51,6 @@ When your code grows the logic in Main method might grow too. RightTurn will hel
 
 ## Quick Start
 
-###### NuGet package
-
-`RightTurn`
-
-###### Provides dependencies
-
-`Microsoft.Extensions.DependencyInjection`
-
-
-
 - Create a new project from **Console Application** template. 
 
 - Set *Project name* to `QuickStart`.
@@ -123,18 +113,6 @@ Hello world
 
 ### Logging
 
-###### NuGet package
-
-`RightTurn.Extensions.Logging`
-
-###### Provides dependencies
-
-`RightTurn` | `Microsoft.Extensions.Logging`
-
-
-
-Use [RightTurn.Extensions.Logging](https://github.com/Jandini/RightTurn.Extensions.Logging) to start your application with logging and keep you code tidy. 
-
 - Add **RightTurn.Extensions.Logging** NuGet package.
 
 - Add `ILogger<QuickService> _logger` to **QuickService** class.
@@ -169,16 +147,6 @@ Use [RightTurn.Extensions.Logging](https://github.com/Jandini/RightTurn.Extensio
 
 #### Logging with Microsoft Console Logging
 
-###### NuGet packages
-
-`RightTurn.Extensions.Logging` | `Microsoft.Extensions.Logging.Console`
-
-###### Provides dependencies
-
-`RightTurn` | `Microsoft.Extensions.Logging`
-
-
-
 - Add **Microsoft.Extensions.Logging.Console** NuGet package.
 - Add `WithLogging` to program's `Main` method
 
@@ -210,14 +178,6 @@ info: QuickStart.QuickService[0]
 
 
 #### Logging with Serilog
-
-###### NuGet packages
-
-`RightTurn.Extensions.Logging` | `Serilog.Extensions.Logging` | `Serilog.Sinks.Console`
-
-
-
-Following steps shows how to add console logging from `Serilog`.
 
 * Add **Serilog.Extensions.Logging** NuGet package.
 * Add **Serilog.Sinks.Console** NuGet package.
@@ -256,17 +216,9 @@ That's it ...
 
 #### Logging with RightTurn.Extensions.Serilog
 
-###### NuGet packages
-
-`RightTurn.Extensions.Serilog`
 
 
-
-Package [RightTurn.Extensions.Serilog](https://github.com/Jandini/RightTurn.Extensions.Serilog) provides [Serilog](https://github.com/serilog/serilog) for out of the box. The package provides `Microsoft.Extensions.Logging`, `RightTurn` and `RighTurn.Extensions.Configuration` as it's dependencies.
-
-
-**Example 1**
-Serilog with inline configuration by code.
+**Example 1** - Serilog with inline configuration by code.
 
 - Add **RightTurn.Extensions.Serilog** NuGet package
 
@@ -293,8 +245,7 @@ Serilog with inline configuration by code.
 
 
 
-**Example 2** 
-Serilog with configuration provided from *appsettings.json* file.
+**Example 2** - Serilog with configuration provided from *appsettings.json* file.
 
 - Add **New Item** to your solution
 
@@ -342,11 +293,15 @@ Serilog with configuration provided from *appsettings.json* file.
 
 ### Configuration
 
-###### with NuGet packages
-
-`RightTurn`,  `RightTurn.Extensions.Configuration`
 
 
+
+
+
+
+
+
+### Command Line
 
 
 
@@ -493,39 +448,17 @@ This is what you can find in directions container
 
 
 
+### Extensions
 
+* [RightTurn.Extensions.Configuration](https://github.com/Jandini/RightTurn.Extensions.Configuration)
+Provides configuration extensions.
 
-## Extensions
+* [RightTurn.Extensions.Logging](https://github.com/Jandini/RightTurn.Extensions.Logging)
+Provides logging extensions.
 
-* Configuration
-
-* Logging
-
-* Serilog
-
-* CommandLine
-
-  
-
-### [Configuration](https://github.com/Jandini/RightTurn.Extensions.Configuration)
-Provides Configuration extensions.
-
-
-### [Logging](https://github.com/Jandini/RightTurn.Extensions.Logging)
-Provides Logging extensions.
-
-### [Serilog](https://github.com/Jandini/RightTurn.Extensions.Logging)
+* [RightTurn.Extensions.Serilog](https://github.com/Jandini/RightTurn.Extensions.Serilog)
 Provides [Serilog](https://github.com/serilog/serilog) extensions.
 
-### [CommandLine](https://github.com/Jandini/RightTurn.Extensions.CommandLine)
+*  [RightTurn.Extensions.CommandLine](https://github.com/Jandini/RightTurn.Extensions.CommandLine)
 Provides [CommandLine Parser](https://github.com/commandlineparser/commandline) extensions.
 
-
-
-
-
-
-
-```
-
-```
