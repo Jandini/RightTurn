@@ -7,10 +7,11 @@
     <PackageId>RightTurn</PackageId>
     <AssemblyName>RightTurn</AssemblyName>
     <RootNamespace>RightTurn</RootNamespace>
-    <Description>Provides application start-up container and extensions. Take new Turn() to run your .NET application with organized main code. Use directions container to manage your configuration, logging, exception handling and command line parser.</Description>
+    <Description>Provides application start-up container and extensions. RightTurn helps to manage your configuration, logging, exception handling and command line parser during application start-up.</Description>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <PackageTags>right turn start-up container application main logging configuration exceptions commandline command line</PackageTags>
-    <RepositoryUrl>https://github.com/Jandini/RightTurn</RepositoryUrl>    
+    <RepositoryUrl>https://github.com/Jandini/RightTurn</RepositoryUrl>
+    <PackageProjectUrl>https://github.com/Jandini/RightTurn</PackageProjectUrl>    
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
