@@ -92,6 +92,9 @@ namespace RightTurn
             if (Directions.Have<ITurnLogging>(out var logging))
                 logging.AddLogging(this);
 
+            if (Directions.Have<ITurnServices>(out var services))
+                services.AddServices(this);
+
             return Directions.Add<IServiceProvider>(Directions.Get<IServiceCollection>()
                 .BuildServiceProvider());
         }

@@ -52,7 +52,7 @@ When your code grows the logic in `Main` method might grow too. RightTurn will h
 
 - Add **RightTurn.Extensions.Serilog** NuGet package.
 
-- Add following files to your project
+- Add following files to your project:
 
   ###### IQuickOptions.cs
   
@@ -161,7 +161,7 @@ When your code grows the logic in `Main` method might grow too. RightTurn will h
       ]
     },
     "QuickSettings": {
-    	"Message": "Hello {name}, Welcome to RightTurn.",
+      "Message": "Hello {name}, Welcome to RightTurn.",
       "Question": "Who are you?"
     }
   }  
@@ -347,7 +347,7 @@ See how RightTurn can help to start-up your application.
   }
   ```
 
-- Run application 
+- Run application.
     ```
     info: QuickStart.QuickService[0]
           Hello World
@@ -359,8 +359,7 @@ See how RightTurn can help to start-up your application.
 
 * Add **Serilog.Extensions.Logging** NuGet package.
 * Add **Serilog.Sinks.Console** NuGet package.
-
-- Add `WithLogging` to program's `Main` method.
+* Add `WithLogging` to program's `Main` method.
 
   ######  Program.cs
 
@@ -384,7 +383,7 @@ See how RightTurn can help to start-up your application.
   }
   ```
 
-- Run application 
+- Run application.
     ```
     [21:50:43 INF] Hello World
     ```
@@ -396,6 +395,8 @@ See how RightTurn can help to start-up your application.
 ##### Serilog with inline configuration by code
 
 - Add **RightTurn.Extensions.Serilog** NuGet package.
+
+- Add **RightTurn.Extensions.Configuration** NuGet package.
 
 - Add `WithLogging` to program's `Main` method.
 
@@ -447,24 +448,25 @@ See how RightTurn can help to start-up your application.
   }
   ```
 
-- Use `WithSerilog()` in program's `Main` method.
+- Use `WithConfigurationFile()` and `WithSerilog()` in program's `Main` method.
 
     ```C#
     using RightTurn;
     using RightTurn.Extensions.Serilog;
-
+    
     namespace QuickStart
     {
         class Program
         {
             static void Main() => new Turn()
+                .WithConfigurationFile()
                 .WithSerilog()
                 .Take<IQuickService, QuickService>((quick) => quick.Run());
         }
     }
     ```
+
     
-    Note: `WithSerilog()  ` will implicitly call `WithConfigurationFile()` when `ITurnConfiguration` is not present in direction container. 
 
 - Add logging to file for Serilog in appsettings.json file.
 
@@ -610,12 +612,12 @@ See how RightTurn can help to start-up your application.
       class Program
       {
            static void Main() => new Turn()
-  			.WithConfigurationFile()
-  			.WithLogging((builder, turn) => builder
-  				.AddConsole()
-  				.AddConfiguration(turn.Directions.Configuration().GetSection("Logging")))
-  			.WithConfigurationSettings<Settings>("Quick")             
-  			.Take<IQuickService, QuickService>((quick) => quick.Run());
+               .WithConfigurationFile()
+               .WithLogging((builder, turn) => builder
+                   .AddConsole()
+                   .AddConfiguration(turn.Directions.Configuration().GetSection("Logging")))
+               .WithConfigurationSettings<Settings>("Quick")             
+               .Take<IQuickService, QuickService>((quick) => quick.Run());
       }
   }
   ```
@@ -648,7 +650,7 @@ See how RightTurn can help to start-up your application.
   }
   ```
 
-- Run application 
+- Run application.
 
   ```
   info: QuickStart.QuickService[0]
@@ -784,7 +786,7 @@ See how RightTurn can help to start-up your application.
   ```
 
 
-- Run application
+- Run application.
 
   ```
   QuickStart 1.0.0
@@ -891,7 +893,7 @@ The example is based on the code created in **Logging with RightTurn Serilog** s
   
           public void Run()
           {
-              throw new Exception("I am unhandled");
+              throw new Exception("I am unhandled exception");
           }
       }
   }
@@ -912,16 +914,16 @@ The example is based on the code created in **Logging with RightTurn Serilog** s
       {
           static void Main() => new Turn()
               .WithSerilog()
-  			.WithUnhandledExceptionHandler((exception) => Console.WriteLine(exception.Message))
+              .WithUnhandledExceptionHandler((exception) => Console.WriteLine(exception.Message))
               .Take<IQuickService, QuickService>((quick) => quick.Run());
       }
   }
   ```
 
-- Run application 
+- Run application. 
 
   ```
-  I am unhandled
+  I am unhandled exception
   ```
 
 - Replace `WithUnhandledExceptionHandler` with `WithUnhandledExceptionLogging` 
@@ -945,10 +947,10 @@ The example is based on the code created in **Logging with RightTurn Serilog** s
   }
   ```
 
-- Run application
+- Run application.
 
   ```
-  [21:01:46 FTL] I am unhandled
+  [21:01:46 FTL] I am unhandled exception
   ```
 
 
@@ -1014,6 +1016,7 @@ In this section you can apply available extensions and provide services and conf
 `WithServices`
 
 > Add services required services.
+> Configuration extensions provides `WithServices` extension with access to `IConfiguration`.
 
 `WithTurn`
 
@@ -1061,6 +1064,10 @@ The `Take` will do following:
 
 > Add logging if _directions container_ has `ITurnLogging`.
 
+`AddServices`
+
+> Add services that require access to `IConfiguration` before are added to ServiceCollection.
+
 `BuildServiceProvider`
 
 > Build service provider and add `IServiceCollection` to _directions container_ container.
@@ -1073,6 +1080,9 @@ if (Directions.Have<ITurnConfiguration>(out var configuration))
 
 if (Directions.Have<ITurnLogging>(out var logging))
     logging.AddLogging(this);
+
+if (Directions.Have<ITurnServices>(out var services))
+    services.AddServices(this);
 
 return Directions.Add<IServiceProvider>(Directions.Get<IServiceCollection>().BuildServiceProvider());
 ```
