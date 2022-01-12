@@ -4,9 +4,19 @@ using System.Collections.Generic;
 namespace RightTurn
 {
     internal class TurnDirections : Dictionary<Type, object>, ITurnDirections
-    {       
+    {      
         public T Add<T>(T value)
         {
+            this[typeof(T)] = value;
+            return value;
+        }
+
+        public T Add<T>() where T : new()
+        {
+            if (ContainsKey(typeof(T)))
+                return (T)this[typeof(T)];
+
+            var value = new T();
             this[typeof(T)] = value;
             return value;
         }
@@ -32,7 +42,6 @@ namespace RightTurn
                 return default;
 
             return (T)this[typeof(T)];
-        }
-        
+        }      
     }
 }
