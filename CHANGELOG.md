@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [0.3.0](https://github.com/Jandini/RightTurn/compare/0.2.0...0.3.0) (2022-01-12)
+
+
+### Features
+
+* Add github actions ([2fca293](https://github.com/Jandini/RightTurn/commit/2fca293b08e52f2ec33a644c29aa9e5d8de2a652))
+
 ## [0.2.0](https://github.com/Jandini/RightTurn/compare/0.1.0...0.2.0) (2021-03-27)
 
 
