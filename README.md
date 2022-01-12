@@ -2,6 +2,8 @@
 > Take the right turn to start your .NET application with dependency injection container, configuration, logging, exception handling and command line parser.
 >
 
+[![.NET](https://github.com/Jandini/RightTurn/actions/workflows/build.yml/badge.svg)](https://github.com/Jandini/RightTurn/actions/workflows/build.yml)
+
 RightTurn is .NET application start-up container. The goal is to organize your application start-up code as well as provide reusable components via extensions.
 
 Your program start-up can look like this ...
